@@ -4,6 +4,8 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.text.format.Time;
 
+import com.android.sunshine.callbacks.Updatable;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,6 +18,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by Mohit Goel on 09-10-2017.
@@ -25,6 +29,8 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 {
 
     private static  final String LOG_TAG=FetchWeatherAsyncTask.class.getSimpleName();
+
+    public Updatable updatable;
 
     /* The date/time conversion code is going to be moved  outside the asynctask later,
          * so for  convenience I'm breaking it out into its own method now.
@@ -76,7 +82,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
 
             String[] resultStrs = new String[numOfDays];
-            for(int i=0;i<numOfDays;i++)
+            for(int i=0;i<weatherArray.length();i++)
             {
                 String day;
                 String description;
@@ -88,8 +94,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
                 dateTime = dayTime.setJulianDay(julianStartDay+i);
                 day = getReadableDateFormat(dateTime);
 
-                JSONArray currentWeather=dayForecast.getJSONArray(WEATHER);
-               JSONObject currentCondition=currentWeather.getJSONObject(0);
+                JSONObject currentCondition = dayForecast.getJSONArray(WEATHER).getJSONObject(0);
                 description=currentCondition.getString(DESCRIPTION);
 
                 JSONObject currentTemp=dayForecast.getJSONObject(TEMPERATURE);
@@ -201,6 +206,6 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
     @Override
     protected void onPostExecute(String[] strings) {
-        super.onPostExecute(strings);
+        updatable.onWeatherUpdate(Arrays.asList(strings));
     }
 }

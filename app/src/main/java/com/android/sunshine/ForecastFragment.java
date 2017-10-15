@@ -12,15 +12,17 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.sunshine.callbacks.Updatable;
 import com.android.sunshine.webservices.FetchWeatherAsyncTask;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment {
+public class ForecastFragment extends Fragment implements Updatable {
 
     ArrayAdapter<String> mForecastAdapter;
     public ForecastFragment() {
@@ -42,7 +44,7 @@ public class ForecastFragment extends Fragment {
 
         ArrayList<String> weekForecast=new ArrayList<>(Arrays.asList(fakeData));
 
-        mForecastAdapter=new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,R.id.list_item_forecast_textview,fakeData);
+        mForecastAdapter=new ArrayAdapter<String>(getActivity(),R.layout.list_item_forecast,R.id.list_item_forecast_textview,weekForecast);
 
         ListView listView=(ListView)rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
@@ -69,6 +71,7 @@ public class ForecastFragment extends Fragment {
         {
             case R.id.action_refresh:
                 FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
+                weatherAsyncTask.updatable=this;
                 weatherAsyncTask.execute("560034");
                 return true;
             default:
@@ -76,5 +79,12 @@ public class ForecastFragment extends Fragment {
         }
 
 
+    }
+
+    @Override
+    public void onWeatherUpdate(List<String> weather) {
+        mForecastAdapter.clear();
+
+         mForecastAdapter.addAll(weather);
     }
 }
