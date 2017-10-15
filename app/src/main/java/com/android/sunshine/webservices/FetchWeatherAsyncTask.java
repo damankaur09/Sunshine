@@ -1,5 +1,6 @@
 package com.android.sunshine.webservices;
 
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -16,24 +17,45 @@ import java.net.URL;
  * Created by Mohit Goel on 09-10-2017.
  */
 
-public class FetchWeatherAsyncTask extends AsyncTask<Void,Void,Void>
+public class FetchWeatherAsyncTask extends AsyncTask<String,Void,Void>
 {
 
     private static  final String LOG_TAG=FetchWeatherAsyncTask.class.getSimpleName();
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected Void doInBackground(String... param) {
 
+        if(param.length==0)
+        {
+                return null;
+        }
         HttpURLConnection urlConnection=null;
         BufferedReader reader=null;
 
         String forecastJsonStr=null;
+        String format="json";
+        String units="metric";
+        String numOfDays="7";
+        String appID="";
 
-        String baseURl="http://api.openweathermap.org/data/2.5/forecast/daily?q=560034&units=metric&mode=json&cnt=7";
-        String apiKey="";
+        final String FORECAST_BASE_URL="http://api.openweathermap.org/data/2.5/forecast/daily?";
+        final String QUERY_PARAM="q";
+        final String FORMAT_PARAM="mode";
+        final String UNITS_PARAM="units";
+        final String DAYS_PARAM="cnt";
+        final String APP_ID="appid";
         try {
             // Create a request to OpenWeatherMap, and open the connection
-            URL url=new URL(baseURl.concat(apiKey));
+
+            Uri uri=Uri.parse(FORECAST_BASE_URL).buildUpon()
+                    .appendQueryParameter(QUERY_PARAM,param[0])
+                    .appendQueryParameter(UNITS_PARAM,units)
+                    .appendQueryParameter(FORMAT_PARAM,format)
+                    .appendQueryParameter(DAYS_PARAM,numOfDays)
+                    .appendQueryParameter(APP_ID,appID)
+                    .build();
+
+            URL url=new URL(uri.toString());
             urlConnection = (HttpURLConnection)url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
