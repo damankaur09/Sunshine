@@ -69,7 +69,7 @@ public class ForecastFragment extends Fragment {
         {
             case R.id.action_refresh:
                 FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
-                weatherAsyncTask.execute();
+                weatherAsyncTask.execute("560034");
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
