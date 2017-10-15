@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.android.sunshine.webservices.FetchWeatherAsyncTask;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -66,6 +68,8 @@ public class ForecastFragment extends Fragment {
         switch (item.getItemId())
         {
             case R.id.action_refresh:
+                FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
+                weatherAsyncTask.execute();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
