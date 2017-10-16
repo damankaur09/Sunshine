@@ -205,7 +205,11 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
     }
 
     @Override
-    protected void onPostExecute(String[] strings) {
-        updatable.onWeatherUpdate(Arrays.asList(strings));
+    protected void onPostExecute(String[] result) {
+        if(result !=null)
+        {
+            updatable.onWeatherUpdate(Arrays.asList(result));
+        }
+
     }
 }
