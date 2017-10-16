@@ -1,5 +1,6 @@
 package com.android.sunshine;
 
+import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -55,25 +56,13 @@ public class ForecastFragment extends Fragment implements Updatable {
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-                CharSequence tempString=((TextView)view).getText();
-
-                LayoutInflater inflater=getActivity().getLayoutInflater();
-
-                View layout=inflater.inflate(R.layout.custom_toast,(ViewGroup)getActivity().findViewById(R.id.toast_layout_root));
-
-                TextView tv=(TextView)layout.findViewById(R.id.toast_text);
-
-                tv.setText(tempString);
-
-                Toast toast=new Toast(getActivity());
-                toast.setGravity(Gravity.CENTER_VERTICAL,0,0);
-                toast.setDuration(Toast.LENGTH_SHORT);
-                toast.setView(layout);
-                toast.show();
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent intent=new Intent(getActivity(),DetailActivity.class);
+                intent.putExtra(Intent.EXTRA_TEXT,"Forecast Detail");
+                startActivity(intent);
             }
         });
+
         return rootView;
     }
 
