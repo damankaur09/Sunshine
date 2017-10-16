@@ -57,8 +57,9 @@ public class ForecastFragment extends Fragment implements Updatable {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                CharSequence tempString =((TextView)view).getText();
                 Intent intent=new Intent(getActivity(),DetailActivity.class);
-                intent.putExtra(Intent.EXTRA_TEXT,"Forecast Detail");
+                intent.putExtra(Intent.EXTRA_TEXT,tempString);
                 startActivity(intent);
             }
         });
