@@ -1,6 +1,8 @@
 package com.android.sunshine;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -88,7 +90,10 @@ public class ForecastFragment extends Fragment implements Updatable {
             case R.id.action_refresh:
                 FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
                 weatherAsyncTask.updatable=this;
-                weatherAsyncTask.execute("560034");
+
+                SharedPreferences sharedPref= PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String location=sharedPref.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+                weatherAsyncTask.execute(location);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
