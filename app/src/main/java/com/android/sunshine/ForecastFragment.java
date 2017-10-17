@@ -88,18 +88,29 @@ public class ForecastFragment extends Fragment implements Updatable {
         switch (item.getItemId())
         {
             case R.id.action_refresh:
-                FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
-                weatherAsyncTask.updatable=this;
-
-                SharedPreferences sharedPref= PreferenceManager.getDefaultSharedPreferences(getActivity());
-                String location=sharedPref.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
-                weatherAsyncTask.execute(location);
+               updateWeather();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
 
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        updateWeather();
+    }
+
+    private void updateWeather()
+    {
+        FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
+        weatherAsyncTask.updatable=this;
+
+        SharedPreferences sharedPref= PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location=sharedPref.getString(getString(R.string.pref_location_key),getString(R.string.pref_location_default));
+        weatherAsyncTask.execute(location);
     }
 
     @Override
