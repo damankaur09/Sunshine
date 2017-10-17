@@ -1,9 +1,14 @@
 package com.android.sunshine.webservices;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.text.format.Time;
+import android.util.Log;
 
+import com.android.sunshine.R;
 import com.android.sunshine.callbacks.Updatable;
 
 import org.json.JSONArray;
@@ -32,6 +37,13 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
     public Updatable updatable;
 
+    private Context mContext;
+
+    public FetchWeatherAsyncTask(Context mContext) {
+        super();
+        this.mContext = mContext;
+    }
+
     /* The date/time conversion code is going to be moved  outside the asynctask later,
          * so for  convenience I'm breaking it out into its own method now.
         */
@@ -46,10 +58,20 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
      * Prepare the weather high/low for  presentation.
      */
 
-    private String formatHighAndLow(double high,double low)
+    private String formatHighAndLow(double high,double low,String unitTypeRequired  )
     {
         long roundedHigh=Math.round(high);
         long roundedLow=Math.round(low);
+
+        if(unitTypeRequired.equals(mContext.getString(R.string.pref_units_metric)))
+        {
+            high=(high * 1.8) + 32;
+            low=(low * 1.8) + 32;
+        }
+        else if(!unitTypeRequired.equals(mContext.getString(R.string.pref_units_metric)))
+        {
+            Log.d(LOG_TAG, "Unit type not found: " + unitTypeRequired);
+        }
 
         String highLowStr=roundedHigh + "/" + roundedLow;
         return highLowStr;
@@ -82,6 +104,9 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
 
             String[] resultStrs = new String[numOfDays];
+
+        SharedPreferences sharedPreferences= PreferenceManager.getDefaultSharedPreferences(mContext);
+        String unitType=sharedPreferences.getString(mContext.getString(R.string.pref_units_key),mContext.getString(R.string.pref_units_default));
             for(int i=0;i<weatherArray.length();i++)
             {
                 String day;
@@ -101,7 +126,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
                 double max=currentTemp.getDouble(MAX);
                 double min=currentTemp.getDouble(MIN);
 
-                highAndLow=formatHighAndLow(max,min);
+                highAndLow=formatHighAndLow(max,min,unitType);
 
                 resultStrs[i]=day+"-"+ description + "-" +  highAndLow;
 

@@ -105,7 +105,7 @@ public class ForecastFragment extends Fragment implements Updatable {
 
     private void updateWeather()
     {
-        FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask();
+        FetchWeatherAsyncTask weatherAsyncTask=new FetchWeatherAsyncTask(getActivity());
         weatherAsyncTask.updatable=this;
 
         SharedPreferences sharedPref= PreferenceManager.getDefaultSharedPreferences(getActivity());
