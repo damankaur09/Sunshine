@@ -4,6 +4,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -199,6 +200,14 @@ public class WeatherProvider extends ContentProvider
                     returnUri = WeatherContract.WeatherEntry.buildWeatherUri(_id);
                 } else
                     throw new android.database.SQLException("Failed to insert row into " + uri);
+                break;
+            }
+            case LOCATION: {
+                long _id = db.insert(WeatherContract.LocationEntry.TABLE_NAME, null, contentValues);
+                if (_id > 0) {
+                    returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+                } else
+                    throw new SQLException("Failed to insert row into " + uri);
                 break;
             }
             default:
