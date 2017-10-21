@@ -218,14 +218,58 @@ public class WeatherProvider extends ContentProvider
     }
 
     @Override
-    public int delete(Uri uri, String s, String[] strings)
+    public int delete(Uri uri, String selection, String[] selectionArgs)
     {
-        return 0;
+        final SQLiteDatabase db=mOpenHelper.getWritableDatabase();
+        final int match=sUriMatcher.match(uri);
+
+        int deleteCount=0;
+
+        if(selection==null)
+            selection="1";
+
+        switch (match)
+        {
+            case WEATHER:
+                deleteCount=db.delete(WeatherContract.WeatherEntry.TABLE_NAME,selection,selectionArgs);
+                break;
+            case LOCATION:
+                deleteCount=db.delete(WeatherContract.LocationEntry.TABLE_NAME,selection,selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: "+uri);
+        }
+
+        if(deleteCount!=0)
+        {
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return deleteCount;
     }
 
     @Override
-    public int update(Uri uri, ContentValues contentValues, String s, String[] strings) {
-        return 0;
+    public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
+        final SQLiteDatabase db=mOpenHelper.getWritableDatabase();
+        final int match=sUriMatcher.match(uri);
+
+        int updateCount=0;
+        switch (match)
+        {
+            case WEATHER:
+                normalizeDate(contentValues);
+                break;
+            case LOCATION:
+                updateCount=db.update(WeatherContract.WeatherEntry.TABLE_NAME,contentValues,selection,selectionArgs);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: "+uri);
+
+        }
+        if(updateCount!=0)
+        {
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return updateCount;
     }
 
     private void normalizeDate(ContentValues values)
