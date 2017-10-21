@@ -133,10 +133,26 @@ public class WeatherProvider extends ContentProvider
                 setCursor=getWeatherByLocationSetting(uri,projection,sortOrder);
                 break;
             case WEATHER:
-                setCursor=null;
+                setCursor=mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             case LOCATION:
-                setCursor=null;
+                setCursor=mOpenHelper.getReadableDatabase().query(
+                        WeatherContract.LocationEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+uri);

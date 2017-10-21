@@ -26,6 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Vector;
 
 /**
@@ -52,8 +53,9 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
     private String getReadableDateFormat(long time)
     {
-        SimpleDateFormat dateFormat=new SimpleDateFormat("EEE MMM dd");
-        return dateFormat.format(time);
+        Date date=new Date(time);
+        SimpleDateFormat dateFormat=new SimpleDateFormat("E MMM dd");
+        return dateFormat.format(date).toString();
     }
 
     /**
