@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
@@ -43,10 +44,9 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
     public Updatable updatable;
 
-    private Context mContext;
+    public Context mContext;
 
     public FetchWeatherAsyncTask(Context mContext) {
-        super();
         this.mContext = mContext;
     }
 
@@ -123,6 +123,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
         final String DESCRIPTION="main";
         final String WEATHER_ID="id";
 
+
         try {
             JSONObject forecastJson=  new JSONObject(forecastJsonStr);
             JSONArray weatherArray=forecastJson.getJSONArray(LIST);
@@ -195,11 +196,31 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
 
             if(cVVector.size()>0)
             {
-                // Student: call bulkInsert to add the weatherEntries to the database here
+                ContentValues[] cvArray=new ContentValues[cVVector.size()];
+                cVVector.toArray(cvArray);
+                mContext.getContentResolver().bulkInsert(WeatherContract.WeatherEntry.CONTENT_URI,cvArray);
             }
 
             String sortOrder= WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-            Uri weatherLocationUri= WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(locationSetting,System.currentTimeMillis());
+            Uri weatherLocationUri= WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                    locationSetting,System.currentTimeMillis());
+
+            Cursor cursor=mContext.getContentResolver().query(weatherLocationUri,
+                    null,null,null,sortOrder);
+            cVVector=new Vector<ContentValues>(cursor.getCount());
+
+            System.out.print(cursor.getCount());
+            if(cursor.moveToFirst())
+            {
+               while(cursor.moveToNext()) {
+                    ContentValues cv=new ContentValues();
+                    DatabaseUtils.cursorRowToContentValues(cursor,cv);
+                    cVVector.add(cv);
+                }
+
+            }
+
+            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + cVVector.size() + " Inserted");
 
             String [] resultStrs=convertContentValuesToUXFormat(cVVector);
             return resultStrs;
@@ -207,6 +228,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
 
         return null;
 
@@ -288,7 +310,7 @@ public class FetchWeatherAsyncTask extends AsyncTask<String, Void, String[]>
         String forecastJsonStr=null;
         String format="json";
         String units="metric";
-        String numOfDays="7";
+        String numOfDays="14";
         String appID="273d09eec63fef96db00f20143533b4d";
 
         final String FORECAST_BASE_URL="http://api.openweathermap.org/data/2.5/forecast/daily?";
